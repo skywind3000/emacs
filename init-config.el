@@ -19,6 +19,7 @@
 (global-set-key (kbd "TAB") 'self-insert-command)
 
 (global-linum-mode t)
+(setq compilation-window-height 10)
 
 (provide 'init-config)
 
