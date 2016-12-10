@@ -17,6 +17,8 @@
 ; (global-set-key (kbd "<tab>") '(lambda () (interactive) (insert-char 9 1)))
 (global-set-key (kbd "TAB") 'self-insert-command)
 
+(global-linum-mode t)
+
 (provide 'init-config)
 
 
