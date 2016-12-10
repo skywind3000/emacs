@@ -1,6 +1,7 @@
 (message "init-config")
 
 (setq-default indent-tabs-mode t)
+(setq tab-always-indent 'complete)
 (setq tab-width 4)
 
 (defvaralias 'c-basic-offset 'tab-width)
