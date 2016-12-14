@@ -17,6 +17,8 @@
 (message "init.el")
 
 (require 'init-config)
+(require 'init-tabs)
+(require 'init-compilation)
 
 
 (message "done")
