@@ -1,7 +1,7 @@
 
 (setq-default indent-tabs-mode t)
 (setq tab-always-indent 'complete)
-(setq tab-width 4)
+(setq-default tab-width 4)
 
 (defvaralias 'c-basic-offset 'tab-width)
 (defvaralias 'cperl-indent-level 'tab-width)
@@ -17,6 +17,7 @@
 (add-hook 'c-mode-hook
           (lambda ()
            (setq indent-tabs-mode t)
+           (setq c-basic-offset 4)
            (setq tab-width 4)))
 
 ; (global-set-key (kbd "<tab>") '(lambda () (interactive) (insert-char 9 1)))
