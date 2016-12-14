@@ -6,6 +6,8 @@
 (setq config-lisp (concat config-home "lisp"))
 (setq config-lib (concat config-home "lib"))
 
+(message (concat "init from: " config-home))
+
 ; (message (file-name-directory (buffer-file-name)))
 ; (push config-lisp load-path)
 ; (push config-home load-path)
