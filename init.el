@@ -18,7 +18,6 @@
 
 (require 'init-config)
 
-(require 'skywind)
 
 (message "done")
 
