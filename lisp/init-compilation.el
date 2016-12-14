@@ -14,6 +14,8 @@
 (add-hook 'compilation-mode-hook 'my-compilation-hook)
 
 
+(global-set-key [f4] 'compile)
+
 
 (provide 'init-compilation)
 
