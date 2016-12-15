@@ -27,6 +27,9 @@
     (set-process-query-on-exit-flag proc nil))
   )
 
+
+(global-set-key [f10] 'eval-buffer)
+
 (provide 'init-config)
 
 
