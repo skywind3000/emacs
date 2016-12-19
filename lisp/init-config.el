@@ -30,6 +30,16 @@
 
 (global-set-key [f10] 'eval-buffer)
 
+(setq scroll-step            1
+      scroll-conservatively  10000)
+
+(defun zap-to-char-save (arg char)
+    "Zap to a character, but save instead of kill."
+    (interactive "p\ncZap to char: ")
+    (save-excursion
+      (zap-to-char arg char)
+      (yank)))
+
 (provide 'init-config)
 
 
