@@ -36,7 +36,7 @@
 	(setenv "EMACS_FILEDIR" (cdr (assoc :file-dir buffer-info)))
 	(setenv "EMACS_FILEEXT" (cdr (assoc :file-ext buffer-info)))
 	(setenv "EMACS_FILENOEXT" (cdr (assoc :file-noext buffer-info)))
-	(setenv "EMACS_PID" (cdr (assoc :emacs-pid buffer-info)))
+	(setenv "EMACS_PID" (number-to-string (cdr (assoc :emacs-pid buffer-info))))
 	(setenv "EMACS_CWD" (cdr (assoc :default-cwd buffer-info)))
 	))
   
@@ -45,12 +45,10 @@
 (message "%s" (eq buffer-file-name nil))
 (message "%s" (vimmake-buffer-info))
 
-(message "%s" (assoc :file-noext (vimmake-init-environ)))
-
 (message "pwd: %s" (pwd))
 (message "default-pwd: %s" default-directory)
 
-(vimmake-init-environ (vimmake-init-environ))
+(vimmake-init-environ (vimmake-buffer-info))
 
 (provide 'vimmake)
 
