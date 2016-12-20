@@ -6,6 +6,13 @@
 (global-linum-mode t)
 (setq linum-format "%d ")
 
+(setq linum-disabled-modes-list '(eshell-mode wl-summary-mode compilation-mode)) 
+
+(defun linum-on () 
+ (unless (or (minibufferp) 
+          (member major-mode linum-disabled-modes-list)) (linum-mode 1)))
+
+
 ; (unless window-system
 ;   (add-hook 'linum-before-numbering-hook
 ; 	    (lambda ()
