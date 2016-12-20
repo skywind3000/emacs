@@ -8,6 +8,8 @@
 
 ; (c-set-font "Courier New" "微软雅黑" 14 16)
 (c-set-font "Inconsolata" "Inconsolata" 15 17)
+(c-set-font "Inconsolata" "新宋体" 15 15)
+;(c-set-font "Courier New" "新宋体" 13 15)
 
 
 (provide 'init-font)
