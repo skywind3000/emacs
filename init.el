@@ -20,6 +20,7 @@
 
 (require 'init-config)
 (require 'init-tabs)
+(require 'init-font)
 (require 'init-compilation)
 
 
