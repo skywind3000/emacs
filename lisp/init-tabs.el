@@ -20,6 +20,12 @@
            (setq c-basic-offset 4)
            (setq tab-width 4)))
 
+(add-hook 'emacs-lisp
+          (lambda ()
+           (setq indent-tab-mode nil)
+           (setq c-basic-offset 4)
+           (setq tab-width 4)))
+
 ; (global-set-key (kbd "<tab>") '(lambda () (interactive) (insert-char 9 1)))
 (global-set-key (kbd "TAB") 'self-insert-command)
 

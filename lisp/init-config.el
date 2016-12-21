@@ -4,9 +4,14 @@
 
 (setq inhibit-startup-screen t)
 (global-linum-mode t)
-(setq linum-format "%d ")
+(setq linum-format "%4d ")
 
-(setq linum-disabled-modes-list '(eshell-mode wl-summary-mode compilation-mode)) 
+(setq linum-disabled-modes-list 
+ '(eshell-mode 
+   wl-summary-mode 
+   compilation-mode
+   message-mode
+   )) 
 
 (defun linum-on () 
  (unless (or (minibufferp) 
