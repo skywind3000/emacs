@@ -40,23 +40,23 @@
 	(setenv "EMACS_CWD" (cdr (assoc :default-cwd buffer-info)))
 	))
 
-(defun vimmake-string-template (source-string, template)
+(defun vimmake-string-template (source-string template)
   (let ((new-string source-string)
 		(temp-length (length template))
 		(index 0)
 		(item-key "")
 		(item-val ""))
-	(while (index < temp-length)
+	(while (< index temp-length)
 	  (setq item-key (car (nth index template)))
 	  (setq item-val (cdr (nth index template)))
 	  (setq new-string (replace-regexp-in-string
 						(regexp-quote item-key)
 						item-val
-						new-string))
+						new-string t t))
 	  (setq index (+ index 1)))
 	new-string))
 
-(defun vimmake-replace-string (buffer-info, command)
+(defun vimmake-replace-string (buffer-info command)
   (let ((new-command "")
 		(temp-list nil)
 		(new-command command)
@@ -71,7 +71,9 @@
 				   (cons "%e" (cdr (assoc :file-ext buffer-info)))
 				   (cons "%P" (cdr (assoc :file-dir buffer-info)))
 				   (cons "%p" (cdr (assoc :file-dir buffer-info)))))
-  (vimmake-string-template command temp-list)))
+  (message "temp-list: %s" temp-list)
+  (vimmake-string-template command temp-list)
+  ))
 
 
 
@@ -83,8 +85,11 @@
 
 (setq buffer-info (vimmake-buffer-info))
 
-;(message "replace: %s" (vimmake-replace-string buffer-info "F: %F\nf: %f\nn: %n\nN: %N\ne: %e\nP: %P\np: %p"))
-		  
+(vimmake-replace-string buffer-info "dfsdfdsf")
+
+(message "replace: %s" (vimmake-replace-string buffer-info "F: %F\nf: %f\nn: %n\nN: %N\ne: %e\nP: %P\np: %p"))
+
+(message "-----------------")
 
 (provide 'vimmake)
 
