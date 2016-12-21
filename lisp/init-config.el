@@ -2,6 +2,7 @@
 
 (message (concat "init from: " config-home))
 
+(set-default 'truncate-lines t)
 (setq inhibit-startup-screen t)
 (global-linum-mode t)
 (setq linum-format "%4d ")
