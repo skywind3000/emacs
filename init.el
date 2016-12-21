@@ -23,6 +23,8 @@
 (require 'init-font)
 (require 'init-compilation)
 
+(require 'vimmake)
+
 
 (message "done")
 
