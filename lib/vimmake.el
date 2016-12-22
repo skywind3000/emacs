@@ -1,4 +1,4 @@
-(message "Vimmake here")
+;; vimmake.el - make and execute programs
 
 (defun vimmake-buffer-info ()
   (let ((file-name "")
@@ -80,12 +80,57 @@
 		(setq next-list (cons (cons nkey nval) next-list))))
 	(setq temp-list (append temp-list next-list))
 	(vimmake-string-template new-command temp-list)
-  ))
+	))
+
+(defun vimmake-write-file (filename text)
+  (with-temp-buffer
+	(erase-buffer)
+	(insert text)
+	(write-region (point-min) (point-max) filename nil)))
 
 (defun vimmake-run-compile (command option)
   (let ((compilation-ask-about-save nil)
 		(compile-command ""))
 	(compile command)
+	))
+
+(defun vimmake-run-process (command option)
+  (let ((opt-open (cdr (or (assoc :open option) '(0 . nil))))
+		(buffer-name (cdr (or (assoc :buffer-name option) '(0 . nil))))
+		(process-name (cdr (or (assoc :process-name option) '(0 . nil))))
+		(pid nil))
+	(setq buffer-name (or buffer-name "*vimmake*"))
+	(setq process-name (or process-name "vimmake"))
+	(setq opt-open (or opt-open :normal))
+	(setq pid (start-process-shell-command
+			   process-name
+			   buffer-name
+			   command))
+	))
+
+(defun vimmake-run-windows (command option)
+  (let ((my-command command)
+		(temp-name ""))
+	(setq temp-name (or (getenv "TMP")
+						(getenv "TEMP")))
+	(when (eq temp-name nil)
+	  (setq temp-name (or (getenv "WINDIR")
+						  (getenv "SYSTEMROOT")
+						  "C:\\Windows"))
+	  (setq temp-name (expand-file-name "Temp" temp-name)))
+	(setq temp-name (expand-file-name "vimmake2.cmd" temp-name))
+	(setq my-command (format
+					  "@echo off\ncd /D %s\ncall %s\npause\n"
+					  (shell-quote-argument default-directory)
+					  command))
+	(vimmake-write-file temp-name my-command)
+	(let ((proc (start-process "cmd" nil
+							   "cmd.exe"
+							   "/C"
+							   "start"
+							   "cmd.exe" "/C"
+							   temp-name)))
+	  (set-process-query-on-exit-flag proc nil))
 	))
 
 (defun vimmake-run (command mode option)
@@ -110,22 +155,13 @@
 	  (cond
 	   ((eq mode :compile)
 		(vimmake-run-compile final-command option))
+	   ((eq mode :process)
+		(vimmake-run-process final-command option))
+	   ((and (eq mode :windows) (eq system-type 'windows-nt))
+		(vimmake-run-windows final-command option))
 	   ))
 	))
 
-(message "%s" (eq buffer-file-name nil))
-(message "%s" (vimmake-buffer-info))
-
-(message "pwd: %s" (pwd))
-(message "default-pwd: %s" default-directory)
-
-(setq buffer-info (vimmake-buffer-info))
-
-(vimmake-replace-string buffer-info "dfsdfdsf")
-
-(message "replace: \n%s" (vimmake-replace-string buffer-info "F: %F\nf: %f\nn: %n\nm: %m\ne: %e\nx: %x\np: %p"))
-
-(message "-----------------")
 
 (provide 'vimmake)
 
