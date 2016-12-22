@@ -1,5 +1,8 @@
 ;; vimmake.el - make and execute programs
 
+(defvar vimmake-default-height 6)
+(defvar vimmake-default-width 40)
+
 (defun vimmake-buffer-info ()
   (let ((file-name "")
         (file-path "")
@@ -30,6 +33,10 @@
 	 (cons :line (line-number-at-pos))
 	 (cons :column (current-column))
 	 (cons :cword (or (thing-at-point 'word) ""))
+	 (cons :csymbol (or (thing-at-point 'symbol) ""))
+	 (cons :cline (or (thing-at-point 'line) ""))
+	 (cons :cfile (or (thing-at-point 'filename) ""))
+	 (cons :curl (or (thing-at-point 'url) "" ))
      (cons :default-cwd default-cwd))
     ))
 
@@ -41,9 +48,13 @@
     (setenv "EMACS_FILEEXT" (cdr (assoc :file-ext buffer-info)))
     (setenv "EMACS_FILENOEXT" (cdr (assoc :file-noext buffer-info)))
     (setenv "EMACS_PID" (number-to-string (cdr (assoc :emacs-pid buffer-info))))
-	(setenv "EMACS_LINE" (cdr (assoc :line buffer-info)))
-	(setenv "EMACS_COLUMN" (cdr (assoc :column buffer-info)))
+	(setenv "EMACS_LINE" (number-to-string (cdr (assoc :line buffer-info))))
+	(setenv "EMACS_COLUMN" (number-to-string (cdr (assoc :column buffer-info))))
 	(setenv "EMACS_CWORD" (cdr (assoc :cword buffer-info)))
+	(setenv "EMACS_CSYMBOL" (cdr (assoc :csymbol buffer-info)))
+	(setenv "EMACS_CLINE" (cdr (assoc :cline buffer-info)))
+	(setenv "EMACS_CFILE" (cdr (assoc :cfile buffer-info)))
+	(setenv "EMACS_CURL" (cdr (assoc :curl buffer-info)))		
     (setenv "EMACS_CWD" (cdr (assoc :default-cwd buffer-info)))
     ))
 
@@ -77,7 +88,13 @@
            (cons "%m" (cdr (assoc :file-name buffer-info)))
            (cons "%x" (concat (cdr (assoc :file-dir buffer-info))
                               (cdr (assoc :file-noext buffer-info))))
-           (cons "%w" (cdr (assoc :default-cwd buffer-info)))
+           (cons "%d" (cdr (assoc :default-cwd buffer-info)))
+		   (cons "%l" (number-to-string (cdr (assoc :line buffer-info))))
+		   (cons "%c" (number-to-string (cdr (assoc :column buffer-info))))
+		   (cons "%w" (cdr (assoc :cword buffer-info)))
+		   (cons "%i" (cdr (assoc :cfile buffer-info)))
+		   (cons "%s" (cdr (assoc :csymbol buffer-info)))
+		   (cons "%u" (cdr (assoc :curl buffer-info)))
            ))
 	(dolist (elt temp-list)
 	  (let ((key (car elt))
@@ -117,30 +134,42 @@
 		(pid nil))
 	(setq buffer-name (or buffer-name "*vimmake*"))
 	(setq process-name (or process-name "vimmake"))
-	(setq opt-open (or opt-open :normal))
+	(setq opt-open (or opt-open :default))
 	(setq buffer-name (create-file-buffer buffer-name))
-	(setq win (display-buffer buffer-name))
 	(cond
-	 ((eq opt-open :normal)
-;	  (setq win (display-buffer buffer-name))
-;	  (with-selected-window win (recenter) (message "win: %s" win) )
+	 ((eq opt-open :default)
+	  (setq win (display-buffer buffer-name))
+	  )
+	 ((eq opt-open :same)
+	  (setq win (display-buffer-same-window buffer-name nil))
+	  )
+	 ((eq opt-open :auto)
+	  (setq win (display-buffer
+				 buffer-name
+				 '((display-buffer-reuse-window
+					display-buffer-pop-up-window
+					display-buffer-pop-up-frame)
+				   (window-height . 6)
+				   (window-width . 40))
+				 ))
+	  )
+	 ((eq opt-open :frame)
+	  (setq win (display-buffer-pop-up-frame buffer-name nil))
+	  )
+	 ((eq opt-open :below)
+	  (setq win (display-buffer-below-selected buffer-name nil))
 	  )
 	 )
-	(with-selected-window win
-	  (erase-buffer)
-	  (recenter)
-	  (insert (format "[%s]\n" command))
-	  )	
+	(unless (eq win nil)
+	  (with-selected-window win
+		(erase-buffer)
+		(recenter)
+		(insert (format "[%s]\n" command))
+		))
 	(setq pid (start-process-shell-command
 			   process-name
 			   buffer-name
 			   command))
-	(cond
-	 ((eq opt-open :normal)
-;	  (setq win (display-buffer buffer-name))
-;	  (with-selected-window win (recenter) (message "win: %s" win) )
-	  )
-	 )
 	))
 
 ;; run by open a new cmd.exe window
