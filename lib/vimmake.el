@@ -10,7 +10,7 @@
         (pid 0)
         (absolute-file-name ""))
     (setq absolute-file-name (buffer-file-name))
-	(setq pid (or (and (fboundp emacs-pid) (emacs-pid)) 0)
+	(setq pid (or (and (fboundp 'emacs-pid) (emacs-pid)) 0))
     (when (not (eq absolute-file-name nil))
       (setq absolute-file-name (expand-file-name absolute-file-name))
       (setq file-path absolute-file-name)
@@ -27,6 +27,9 @@
      (cons :file-ext file-ext)
      (cons :file-noext file-noext)
      (cons :emacs-pid pid)
+	 (cons :line (line-number-at-pos))
+	 (cons :column (current-column))
+	 (cons :cword (or (thing-at-point 'word) ""))
      (cons :default-cwd default-cwd))
     ))
 
@@ -38,6 +41,9 @@
     (setenv "EMACS_FILEEXT" (cdr (assoc :file-ext buffer-info)))
     (setenv "EMACS_FILENOEXT" (cdr (assoc :file-noext buffer-info)))
     (setenv "EMACS_PID" (number-to-string (cdr (assoc :emacs-pid buffer-info))))
+	(setenv "EMACS_LINE" (cdr (assoc :line buffer-info)))
+	(setenv "EMACS_COLUMN" (cdr (assoc :column buffer-info)))
+	(setenv "EMACS_CWORD" (cdr (assoc :cword buffer-info)))
     (setenv "EMACS_CWD" (cdr (assoc :default-cwd buffer-info)))
     ))
 
@@ -89,26 +95,55 @@
 	(insert text)
 	(write-region (point-min) (point-max) filename nil)))
 
+(defun vimmake-trim-string (string)
+  (replace-regexp-in-string
+   "\\`[ \t\n]*" ""
+   (replace-regexp-in-string "[ \t\n]*\\'" "" string))
+)
+
+;; run in compilation mode
 (defun vimmake-run-compile (command option)
   (let ((compilation-ask-about-save nil)
 		(compile-command ""))
 	(compile command)
 	))
 
+;; run by start-process
 (defun vimmake-run-process (command option)
   (let ((opt-open (cdr (or (assoc :open option) '(0 . nil))))
 		(buffer-name (cdr (or (assoc :buffer-name option) '(0 . nil))))
 		(process-name (cdr (or (assoc :process-name option) '(0 . nil))))
+		(win nil)
 		(pid nil))
 	(setq buffer-name (or buffer-name "*vimmake*"))
 	(setq process-name (or process-name "vimmake"))
 	(setq opt-open (or opt-open :normal))
+	(setq buffer-name (create-file-buffer buffer-name))
+	(setq win (display-buffer buffer-name))
+	(cond
+	 ((eq opt-open :normal)
+;	  (setq win (display-buffer buffer-name))
+;	  (with-selected-window win (recenter) (message "win: %s" win) )
+	  )
+	 )
+	(with-selected-window win
+	  (erase-buffer)
+	  (recenter)
+	  (insert (format "[%s]\n" command))
+	  )	
 	(setq pid (start-process-shell-command
 			   process-name
 			   buffer-name
 			   command))
+	(cond
+	 ((eq opt-open :normal)
+;	  (setq win (display-buffer buffer-name))
+;	  (with-selected-window win (recenter) (message "win: %s" win) )
+	  )
+	 )
 	))
 
+;; run by open a new cmd.exe window
 (defun vimmake-run-windows (command option)
   (let ((my-command command)
 		(temp-name ""))
@@ -134,6 +169,8 @@
 	  (set-process-query-on-exit-flag proc nil))
 	))
 
+
+;; main function of run
 (defun vimmake-run (command mode option)
   (let ((default-cwd default-directory)
 		(option-save (cdr (or (assoc :save option) '(0 . 0))))
@@ -142,6 +179,7 @@
 		(buffer-info (vimmake-buffer-info))
 		(final-command ""))
 	(setq final-command (vimmake-replace-string buffer-info command))
+	(setq final-command (vimmake-trim-string final-command))
 	(vimmake-init-environ buffer-info)
 	(cond
 	 ((eq option-save 0)
@@ -163,6 +201,7 @@
 	   ))
 	))
 
+(message "vimmake loaded")
 
 (provide 'vimmake)
 
