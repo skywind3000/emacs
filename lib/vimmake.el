@@ -10,6 +10,7 @@
         (pid 0)
         (absolute-file-name ""))
     (setq absolute-file-name (buffer-file-name))
+	(setq pid (or (and (fboundp emacs-pid) (emacs-pid)) 0)
     (when (not (eq absolute-file-name nil))
       (setq absolute-file-name (expand-file-name absolute-file-name))
       (setq file-path absolute-file-name)
