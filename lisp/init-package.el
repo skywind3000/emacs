@@ -1,7 +1,12 @@
 (require 'package)
 
-;(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
-(add-to-list 'package-archives '("melpa" . "http://melpa-stable.milkbox.net/packages/"))
+(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
+;(add-to-list 'package-archives '("melpa" . "http://melpa-stable.milkbox.net/packages/"))
+(add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/"))
+;(add-to-list 'package-archives '("melpa" . "http://elpa.gnu.org/packages/"))
+
+;(setq package-archives '(("gnu"   . "http://elpa.emacs-china.org/gnu/")
+ ;                        ("melpa" . "http://elpa.emacs-china.org/melpa/")))
 
 (package-initialize)
 
