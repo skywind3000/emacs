@@ -14,6 +14,7 @@
 (require 'init-tabs)
 (require 'init-font)
 (require 'init-compilation)
+(require 'init-gdb)
 ;(require 'init-cc-mode)
 
 (require 'vimmake)
